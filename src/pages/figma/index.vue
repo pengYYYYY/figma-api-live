@@ -88,7 +88,9 @@ const getUrlQuery = (params) => {
 };
 
 const redirectUri =
-  import.meta.env.MODE === 'development' ? 'http://localhost:3001/#/figma' : 'https://tdoms.woa.com/#/figma';
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:3001/#/figma'
+    : 'https://pengyyyyy.github.io/figma-api-live-preview/#/figma';
 
 const data = ref();
 const loading = ref(false);
