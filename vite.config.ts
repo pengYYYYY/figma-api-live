@@ -8,7 +8,7 @@ import svgLoader from 'vite-svg-loader';
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   return defineConfig({
-    base: mode === 'development' ? '' : 'figma-api-live-preview',
+    base: mode === 'development' ? '' : 'figma-api-live',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
