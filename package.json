@@ -1,9 +1,9 @@
 {
-  "name": "figma-api-live-preview",
+  "name": "figma-api-live",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint --ext .vue,.js,.jsx,.ts,.tsx ./ --max-warnings 0",
@@ -18,7 +18,7 @@
     "nprogress": "^0.2.0",
     "tdesign-vue-next": "0.15.1",
     "vue": "^3.2.16",
-    "vue-json-pretty": "^2.0.6",
+    "vue-json-pretty": "^2.1.0",
     "vue-router": "^4.0.11"
   },
   "devDependencies": {

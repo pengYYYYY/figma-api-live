@@ -2,8 +2,6 @@
 
 // 该文件部署在serverless上面 https://console.cloud.tencent.com/scf/index
 const express = require('express');
-const path = require('path');
-const fs = require('fs');
 const fetch = require('node-fetch');
 
 const app = express();
@@ -26,10 +24,7 @@ const getUrlQuery = (params) => {
     .join('&');
 };
 
-app.get(`/`, (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
+// 文件结构
 app.get(`/figma/file`, async (req, res) => {
   const { token, havePath, isNodes, depth, ids, authToken, fileUrl, type = 'personalToken' } = req.query;
 
@@ -69,6 +64,7 @@ app.get(`/figma/file`, async (req, res) => {
   });
 });
 
+// auth授权
 app.get(`/figma/auth`, async (req, res) => {
   const { code, redirectUri } = req.query;
 
@@ -90,16 +86,6 @@ app.get(`/figma/auth`, async (req, res) => {
     data: result,
     message: '获取成功',
   });
-});
-
-app.get(`/logo`, (req, res) => {
-  const logo = path.join(__dirname, 'logo.png');
-  const content = fs.readFileSync(logo, {
-    encoding: 'base64',
-  });
-  res.set('Content-Type', 'image/png');
-  res.send(Buffer.from(content, 'base64'));
-  res.status(200).end();
 });
 
 // Web 类型云函数，只能监听 9000 端口

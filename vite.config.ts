@@ -6,12 +6,17 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  base: 'figma-api-live-preview',
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+export default ({ mode }) => {
+  return defineConfig({
+    base: mode === 'development' ? '' : 'figma-api-live-preview',
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
     },
-  },
-  plugins: [createVuePlugin(), vueJsx(), svgLoader()],
-});
+    server: {
+      port: 3001,
+    },
+    plugins: [createVuePlugin(), vueJsx(), svgLoader()],
+  });
+};

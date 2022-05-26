@@ -1,13 +1,13 @@
 <template>
-  <div class="outerBox">
-    <div class="requestForm">
+  <div class="outer-container">
+    <div class="request-body-form">
       <t-tabs v-model="type">
         <t-tab-panel :value="1" label="Auth" />
         <t-tab-panel :value="2" label="AccessToken" />
       </t-tabs>
       <t-form
         ref="form"
-        class="panelInner"
+        class="panel-inner"
         :data="formData"
         :rules="rules"
         label-width="90px"
@@ -15,11 +15,21 @@
         @submit="onSubmit"
       >
         <t-form-item label="Token" name="token">
-          <t-input v-if="type === 2" v-model="formData.token" placeholder="请输入"></t-input>
-          <div v-else>
-            <div v-if="authToken" class="auth-token-container">{{ authToken }}</div>
-            <t-button v-else theme="primary" type="button" @click="handleClickGetFigmaAuth">figma授权</t-button>
-          </div>
+          <t-input v-if="type === 2" v-model="formData.token" placeholder="请输入 Access Tokens"></t-input>
+          <span v-else>
+            <t-tooltip
+              v-if="authToken"
+              :content="authToken"
+              placement="right"
+              :overlay-style="{ width: '250px' }"
+              show-arrow
+            >
+              <t-tag theme="primary" variant="light"> Auth Token </t-tag>
+            </t-tooltip>
+            <t-button v-else theme="primary" type="button" :loading="loading" @click="handleClickGetFigmaAuth">
+              figma授权
+            </t-button>
+          </span>
         </t-form-item>
         <t-form-item label="文件链接" name="fileUrl">
           <t-input v-model="formData.fileUrl" placeholder="请输入"></t-input>
@@ -27,19 +37,21 @@
         <t-form-item label="数据层级" name="depth">
           <t-input-number v-model="formData.depth" placeholder="请输入"></t-input-number>
         </t-form-item>
-        <t-row :gutter="16">
-          <t-col :span="6">
-            <t-form-item label="path数据" name="havePath">
-              <t-switch v-model="formData.havePath" size="large" :label="['开', '关']"></t-switch>
-            </t-form-item>
-          </t-col>
-          <t-col :span="6">
-            <t-form-item label="获取节点" name="isNodes">
-              <t-switch v-model="formData.isNodes" size="large" :label="['开', '关']"></t-switch>
-            </t-form-item>
-          </t-col>
-        </t-row>
-        <t-form-item v-if="formData.isNodes" label="节点过滤" name="ids">
+        <t-form-item :label-width="0">
+          <t-row :gutter="16" style="width: 100%">
+            <t-col :span="6">
+              <t-form-item label="获取path" name="havePath">
+                <t-switch v-model="formData.havePath" size="large" :label="['开', '关']"></t-switch>
+              </t-form-item>
+            </t-col>
+            <t-col :span="6">
+              <t-form-item label="只获取节点" name="isNodes">
+                <t-switch v-model="formData.isNodes" size="large" :label="['开', '关']"></t-switch>
+              </t-form-item>
+            </t-col>
+          </t-row>
+        </t-form-item>
+        <t-form-item v-if="formData.isNodes" label="过滤节点" name="ids">
           <t-input v-model="formData.ids" placeholder="如0:3,0:1"></t-input>
         </t-form-item>
         <t-form-item style="padding-top: 8px">
@@ -63,23 +75,20 @@
         </t-form-item>
         <iframe
           v-if="formData?.fileUrl && data?.thumbnailUrl"
-          style="border: 1px solid rgba(0, 0, 0, 0.1)"
-          width="460"
-          height="450"
+          class="figma-preview-container"
           :src="`https://www.figma.com/embed?embed_host=share&url=${formData.fileUrl} `"
           allowfullscreen
         />
       </t-form>
     </div>
     <t-loading size="small" :loading="loading" show-overlay>
-      <vue-json-pretty class="jsonDiv" :deep-collapse-children="true" :deep="3" :data="data" />
+      <DataTree :data="data" />
     </t-loading>
   </div>
 </template>
 <script setup lang="ts">
-import VueJsonPretty from 'vue-json-pretty';
 import { ref, onMounted, computed } from 'vue';
-import 'vue-json-pretty/lib/styles.css';
+import DataTree from './component/DataTree.vue';
 
 const getUrlQuery = (params) => {
   return Object.keys(params)
@@ -90,7 +99,7 @@ const getUrlQuery = (params) => {
 const redirectUri =
   import.meta.env.MODE === 'development'
     ? 'http://localhost:3001/#/figma'
-    : 'https://pengyyyyy.github.io/figma-api-live-preview/#/figma';
+    : 'https://pengyyyyy.github.io/figma-api-live/#/figma';
 
 const data = ref();
 const loading = ref(false);
@@ -110,12 +119,14 @@ onMounted(async () => {
     const { state, code } = params;
     const storageState = localStorage.getItem('figmaAuthState');
     if (storageState !== state) return;
+    loading.value = true;
     const res = await fetch(
       `https://service-kyuf6ars-1257200260.gz.apigw.tencentcs.com/release/figma/auth?${getUrlQuery({
         code,
         redirectUri,
       })}`,
     );
+    loading.value = false;
     const result = await res.json();
     authToken.value = result.data.access_token;
     localStorage.setItem('figmaAuthToken', authToken.value);
@@ -185,29 +196,23 @@ const handleClickGetFigmaPersonalToken = () => {
 };
 </script>
 <style lang="less">
-.outerBox {
+.outer-container {
   display: flex;
   position: relative;
 }
-.requestForm {
+.request-body-form {
   width: 500px;
   height: 100vh;
   overflow: auto;
 }
-.panelInner {
+.panel-inner {
   padding: 20px;
 }
-.jsonDiv {
-  flex: 1;
-  height: 100vh;
-  width: calc(100vw - 500px);
-  overflow: auto;
-  border-left: 1px solid #ccc;
-  padding: 20px;
-}
-.auth-token-container {
-  width: 350px;
-  word-wrap: break-word;
+.figma-preview-container {
+  width: 460px;
+  height: 450px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 12px;
 }
 .t-form__label {
   padding-right: 12px;
