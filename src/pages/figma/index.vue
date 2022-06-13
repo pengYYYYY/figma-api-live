@@ -121,7 +121,7 @@ onMounted(async () => {
     if (storageState !== state) return;
     loading.value = true;
     const res = await fetch(
-      `https://service-kyuf6ars-1257200260.gz.apigw.tencentcs.com/release/figma/auth?${getUrlQuery({
+      `https://figma-api-server-pengyyyyy.vercel.app/figma/auth?${getUrlQuery({
         code,
         redirectUri,
       })}`,
@@ -167,7 +167,7 @@ const onSubmit = async ({ validateResult }) => {
   if (validateResult !== true) return;
   loading.value = true;
   const res = await fetch(
-    `https://service-kyuf6ars-1257200260.gz.apigw.tencentcs.com/release/figma/file?${getUrlQuery({
+    `https://figma-api-server-pengyyyyy.vercel.app/figma/file?${getUrlQuery({
       ...formData.value,
       authToken: authToken.value,
       type: type.value === 1 ? 'authToken' : 'personalToken',

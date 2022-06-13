@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-// 该文件部署在serverless上面 https://console.cloud.tencent.com/scf/index
+// 该文件部署在 https://vercel.com/ serverless上面
 const express = require('express');
 const fetch = require('node-fetch');
 
@@ -23,6 +23,11 @@ const getUrlQuery = (params) => {
     .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
     .join('&');
 };
+
+// 健康检查
+app.get(`/`, async (req, res) => {
+  res.send('ok');
+});
 
 // 文件结构
 app.get(`/figma/file`, async (req, res) => {

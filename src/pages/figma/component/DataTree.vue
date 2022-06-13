@@ -1,13 +1,6 @@
 <template>
   <div>
-    <vue-json-pretty
-      class="json-container"
-      :deep-collapse-children="true"
-      :deep="3"
-      :path="'res'"
-      :data="data"
-      @click="handleClick"
-    >
+    <vue-json-pretty class="json-container" :deep-collapse-children="true" :deep="3" :path="'res'" :data="data">
     </vue-json-pretty>
   </div>
 </template>
